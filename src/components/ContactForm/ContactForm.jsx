@@ -1,54 +1,36 @@
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
-import { useId } from "react";
-import css from "./ContactForm.module.css";
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { addContact } from '../../redux/contactsSlice';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import css from './ContactForm.module.css';
 
-const ContactForm = ({ addContact }) => {
-  const initialValues = {
-    name: '',
-    number: '',
+const ContactsForm = () => {
+  const [name, setName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const dispatch = useDispatch();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (name.trim() === '' || phoneNumber.trim() === '') {
+      toast.error("Name and phone number are required."); 
+    } else {
+      dispatch(addContact({ name, phoneNumber }));
+      setName('');
+      setPhoneNumber('');
+    }
   };
-
-  const validationSchema = Yup.object({
-    name: Yup.string()
-      .min(3, 'Must be at least 3 characters')
-      .max(50, 'Must be 50 characters or less')
-      .required('Required'),
-    number: Yup.string()
-      .min(3, 'Must be at least 3 characters')
-      .max(50, 'Must be 50 characters or less')
-      .required('Required'),
-  });
-
-  const handleSubmit = (values, { resetForm }) => {
-    addContact(values);
-    resetForm();
-  };
-
-  const nameFieldId = useId();
-  const numFieldId = useId();
 
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-      onSubmit={handleSubmit}
-    >
-      <Form className={css.form}>
-        <div>
-          <label htmlFor={nameFieldId}>Name</label>
-          <Field type="text" id={nameFieldId} name="name" className={css.field} />
-          <ErrorMessage name="name" component="div" id={`${nameFieldId}-error`} />
-        </div>
-        <div>
-          <label htmlFor={numFieldId}>Number</label>
-          <Field type="number" id={numFieldId} name="number" className={css.field} />
-          <ErrorMessage name="number" component="div" id={`${numFieldId}-error`} />
-        </div>
-        <button className={css.btn} type="submit">Add Contact</button>
-      </Form>
-    </Formik>
+    <div>
+      <ToastContainer /> 
+      <form onSubmit={handleSubmit} className={css.form}>
+        <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" className={css.input} />
+        <input type="text" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="Phone Number" className={css.input} />
+        <button type="submit" className={css.btn}>Add Contact</button>
+      </form>
+    </div>
   );
 };
 
-export default ContactForm;
+export default ContactsForm;

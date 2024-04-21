@@ -1,18 +1,24 @@
+import { useDispatch } from 'react-redux';
+import { deleteContact } from '../../redux/contactsSlice';
+
 import styles from "./Contact.module.css"
 import { FaUser } from "@react-icons/all-files/fa/FaUser";
 import { FaPhoneAlt } from "@react-icons/all-files/fa/FaPhoneAlt";
 
-const Contact = ({ id, name, number, deleteContact }) => {
-    const handleDeleteClick = () => {
-    deleteContact(id);
+
+const Contact = ({ contact }) => {
+     const dispatch = useDispatch();
+
+  const handleDelete = () => {
+    dispatch(deleteContact(contact.id));
   };
     return (
         <div className={styles.item}>
             <div>
-                <p><FaUser size="11px" /> {name}</p>
-                <p><FaPhoneAlt size="11px" /> {number}</p>
+                <p><FaUser size="11px" /> {contact.name}</p>
+                <p><FaPhoneAlt size="11px" /> {contact.phoneNumber}</p>
             </div>
-            <button className={styles.btn} onClick={handleDeleteClick}>Delete</button>
+            <button className={styles.btn} onClick={handleDelete}>Delete</button>
         </div>
     )
 
